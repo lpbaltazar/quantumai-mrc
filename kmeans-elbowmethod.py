@@ -2,6 +2,7 @@ import matplotlib as mpl
 mpl.use('Tkagg')
 
 import matplotlib.pyplot as plt
+from kneed import KneeLocator
 import pandas as pd
 import numpy as np
 import itertools
@@ -17,7 +18,7 @@ cols = ['CustomerID', 'AccountType', 'CustomerType', 'NoOfProducts',
 		'NumOfServicesAvailed', 'GC', 'CD', 'R', 'CS',
 		'FirstTime', 'Province',
 		'NumOfComplaints', 'Class']
-df = pd.read_csv(file, encoding="ISO-8859-1", dtype = dcols, usecols= cols)
+df = pd.read_csv(file, encoding="ISO-8859-1", dtype = dcols, usecols= cols, nrows = 5000)
 new_col = pd.factorize(df['Province'])
 df.drop('Province', inplace = True, axis = 1)
 province = pd.Series(data = new_col[0], name="Province")
@@ -38,7 +39,7 @@ with open("lei_code_dictionary.txt", "w") as f:
         f.write(str(code) +"\n")
 
 combination = list(set(itertools.combinations(range(0, 9), 5)))
-for i in range(1):
+for i in range(3):
 	cols = []
 	comb = combination[i]
 	for j in comb:
@@ -51,6 +52,7 @@ for i in range(1):
 	X = df.loc[:, df.columns.isin(cols)]
 	print('File Code: ',file_code)
 	sse = {}
+	wcss = []
 	for k in range_n_clusters:
 		print('k:', k)
 		kmeans = KMeans(k, random_state = 42).fit(X.values)
@@ -58,6 +60,7 @@ for i in range(1):
 		centers = kmeans.cluster_centers_
 
 		sse[k] = kmeans.inertia_
+		wcss.append(kmeans.inertia_)
 		print(sse[k])
 		plt.figure()
 		plt.plot(list(sse.keys()), list(sse.values()))
@@ -66,10 +69,14 @@ for i in range(1):
 		outfile= 'results/elbow-plot/kmeans-elbowmethod-result'+'-'+file_code+'.jpg'
 		plt.savefig(outfile)
 
-	optimal = int(input('Enter optimal number of clusters: '))
-	kmeans = KMeans(optimal, random_state = 42)
+
+	kneedle = KneeLocator(range_n_clusters, wcss, S=1.0, invert=False, direction = 'decreasing')
+	print('Optimal number of clusters: ', kneedle.knee)
+
+	# optimal = int(input('Enter optimal number of clusters: '))
+	kmeans = KMeans(kneedle.knee, random_state = 42)
 	labels = kmeans.fit_predict(X.values)
-	visualize(df, labels, file_code, include_cols)
+	visualize(df, labels, file_code)
 	cluster_labels = pd.DataFrame(labels, index=X.index, columns = ['Cluster_Labels'])
 	cluster_labels.to_csv('results/labels/labels'+'-'+file_code+'.csv',sep=',', encoding='utf-8', index='True')
 
