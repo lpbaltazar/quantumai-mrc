@@ -9,14 +9,24 @@ import seaborn as sns
 from sklearn.cluster import KMeans
 from scipy.spatial.distance import cdist
 
+numeric_cols = ['NoOfProducts', 'AverageBillAmount', 'NumOfServicesAvailed',
+		'AverageBillAmountOutOfWarranty', 'NumOfServicesAvailedOutofWarranty',
+		'NumOfComplaints']
+
 def visualize(df, labels, filecode):
+	present_cols = df.columns.values
+
 	include_cols = []
-	columns = input('Enter numerical columns:')
-	include_cols.append(columns)
+	for col in numeric_cols:
+		if col in present_cols:
+			include_cols.append(col)
+
 	df = df[include_cols]
+	df = df.copy()
 
 	labels = labels.astype('str')
-	df['labels'] = labels
+	df.loc[:, 'Cluster'] = labels
 
-	plot = sns.pairplot(data=df, vars=include_cols, hue = 'labels')
-	plot.savefig('plot-' + filecode + '.jpg')
+	plot = sns.pairplot(data=df, vars=include_cols, hue = 'Cluster', diag_kind="hist")
+	plot.savefig('results/visualization/visualizeplot-' + filecode + '.jpg')
+	print('Saved plot!')
