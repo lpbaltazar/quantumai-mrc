@@ -69,22 +69,6 @@ for i in range(1):
 	optimal = int(input('Enter optimal number of clusters: '))
 	kmeans = KMeans(optimal, random_state = 42)
 	labels = kmeans.fit_predict(X.values)
-	visualize(df, labels, file_code, include_cols)
+	visualize(df, labels, file_code)
 	cluster_labels = pd.DataFrame(labels, index=X.index, columns = ['Cluster_Labels'])
 	cluster_labels.to_csv('results/labels/labels'+'-'+file_code+'.csv',sep=',', encoding='utf-8', index='True')
-
-
-def plotClusters(centers, x1, x2, cluster):
-	plt.figure()
-	plt.scatter(x1,x2, c='black', s= 5)
-	plt.scatter(centers[:, 0], centers[:, 1], marker='o',
-                    c="white", alpha=1, s=200, edgecolor='k')
-
-	for i, c in enumerate(centers):
-	    plt.scatter(c[0], c[1], marker='$%d$' % i, alpha=1,
-	                s=50, edgecolor='k')
-
-	outfile = 'results/result-' + str(cluster) +'.jpg'
-	plt.savefig(outfile)
-
-	range_n_clusters = [2, 3, 4, 5, 6]

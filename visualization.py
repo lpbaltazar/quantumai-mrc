@@ -22,9 +22,11 @@ def visualize(df, labels, filecode):
 			include_cols.append(col)
 
 	df = df[include_cols]
+	df = df.copy()
 
 	labels = labels.astype('str')
-	df['labels'] = labels
+	df.loc[:, 'Cluster'] = labels
 
-	plot = sns.pairplot(data=df, vars=include_cols, hue = 'labels')
-	plot.savefig('plot-' + filecode + '.jpg')
+	plot = sns.pairplot(data=df, vars=include_cols, hue = 'Cluster', diag_kind="hist")
+	plot.savefig('results/visualization/visualizeplot-' + filecode + '.jpg')
+	print('Saved plot!')
