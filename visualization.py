@@ -9,10 +9,18 @@ import seaborn as sns
 from sklearn.cluster import KMeans
 from scipy.spatial.distance import cdist
 
+numeric_cols = ['NoOfProducts', 'AverageBillAmount', 'NumOfServicesAvailed',
+		'AverageBillAmountOutOfWarranty', 'NumOfServicesAvailedOutofWarranty',
+		'NumOfComplaints']
+
 def visualize(df, labels, filecode):
+	present_cols = df.columns.values
+
 	include_cols = []
-	columns = input('Enter numerical columns:')
-	include_cols.append(columns)
+	for col in numeric_cols:
+		if col in present_cols:
+			include_cols.append(col)
+
 	df = df[include_cols]
 
 	labels = labels.astype('str')
