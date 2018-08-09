@@ -18,7 +18,7 @@ cols = ['CustomerID', 'AccountType', 'CustomerType', 'NoOfProducts',
 		'NumOfServicesAvailed', 'GC', 'CD', 'R', 'CS',
 		'FirstTime', 'Province',
 		'NumOfComplaints', 'Class']
-df = pd.read_csv(file, encoding="ISO-8859-1", dtype = dcols, usecols= cols, nrows = 5000)
+df = pd.read_csv(file, encoding="ISO-8859-1", dtype = dcols, usecols= cols)
 new_col = pd.factorize(df['Province'])
 df.drop('Province', inplace = True, axis = 1)
 province = pd.Series(data = new_col[0], name="Province")
